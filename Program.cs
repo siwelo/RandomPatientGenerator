@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using Clearwave.IO;
+using System.Diagnostics;
 
 namespace RandomPatientGenerator
 {
@@ -20,7 +20,7 @@ namespace RandomPatientGenerator
                 using (var csv = new CSVReader(fileReader))
                 {
                     var row = csv.NextRow();
-                    while (row != null)
+                    while (addresses.Count < 1000)
                     {
                         addresses.Add(new Tuple<string, string, string, string, string>(row[0] ?? string.Empty, row[1] ?? string.Empty, row[2] ?? string.Empty, row[3] ?? string.Empty, row[4] ?? string.Empty));
                         row = csv.NextRow();
@@ -28,71 +28,72 @@ namespace RandomPatientGenerator
                 }
             }
 
-            var ran = new Random(42);
+            var timer = new Stopwatch();
+            timer.Start();
+            var ran = new Random();
 
-            // generate patients
-            File.WriteAllText(@"data_patients_1000.csv", "MRN, LastName,FirstName,Gender,DOB,AddressStreet1,AddressStreet2,AddressCity,AddressState,AddressZIPCode" + Environment.NewLine);
-            using (var file = new FileStream(@"data_patients_1000.csv", FileMode.Append))
-            using (var writer = new StreamWriter(file))
+            File.WriteAllText(@"data_patients_1000.csv", "MRN, LastName,FirstName,Gender,DOB,AddressStreet1,AddressStreet2,AddressCity,AddressState,AddressZIPCode\n");
+            for (int i = 0; i < 1000; i++)
             {
-                for (int i = 0; i < 1000; i++)
+                File.AppendAllText("data_patients_1000.csv", "P" + (i + 1).ToString().PadLeft(7, '0') + ",");
+                File.AppendAllText("data_patients_1000.csv", lastNames[ran.Next(lastNames.Count)].Trim() + ",");
+                File.AppendAllText("data_patients_1000.csv", firstNames[ran.Next(lastNames.Count)].Trim() + ",");
+                File.AppendAllText("data_patients_1000.csv", ran.Next(2) + ",");
+                File.AppendAllText("data_patients_1000.csv", RandomDOB(ran).ToString("yyyy/MM/dd") + ",");
+                var address = addresses[ran.Next(addresses.Count)];
+                File.AppendAllText("data_patients_1000.csv", address.Item1.Trim() + ",");
+                File.AppendAllText("data_patients_1000.csv", address.Item2.Trim() + ",");
+                File.AppendAllText("data_patients_1000.csv", address.Item3.Trim() + ",");
+                File.AppendAllText("data_patients_1000.csv", address.Item4.Trim() + ",");
+                File.AppendAllText("data_patients_1000.csv", address.Item5.Trim());
+                if (i % 100 == 0)
                 {
-                    writer.Write("P" + (i + 1).ToString().PadLeft(7, '0') + ",");
-                    writer.Write(lastNames[ran.Next(lastNames.Count)].Trim() + ",");
-                    writer.Write(firstNames[ran.Next(lastNames.Count)].Trim() + ",");
-                    writer.Write(ran.Next(2) + ",");
-                    writer.Write(RandomDOB(ran).ToString("yyyy/MM/dd") + ",");
-                    var address = addresses[ran.Next(addresses.Count)];
-                    writer.Write(address.Item1.Trim() + ",");
-                    writer.Write(address.Item2.Trim() + ",");
-                    writer.Write(address.Item3.Trim() + ",");
-                    writer.Write(address.Item4.Trim() + ",");
-                    writer.Write(address.Item5.Trim());
-                    writer.WriteLine();
+                    Console.WriteLine("Generated : " + i + "/" + 1000 + " patients");
                 }
             }
 
-            File.Copy(@"data_patients_1000.csv", @"data_patients_10000.csv", true);
-            using (var file = new FileStream(@"data_patients_10000.csv", FileMode.Append))
-            using (var writer = new StreamWriter(file))
+            File.WriteAllText(@"data_patients_10000.csv", "MRN, LastName,FirstName,Gender,DOB,AddressStreet1,AddressStreet2,AddressCity,AddressState,AddressZIPCode\n");
+            for (int i = 0; i < 10000; i++)
             {
-                for (int i = 1000; i < 10000; i++)
+                File.AppendAllText("data_patients_10000.csv", "P" + (i + 1).ToString().PadLeft(7, '0') + ",");
+                File.AppendAllText("data_patients_10000.csv", lastNames[ran.Next(lastNames.Count)].Trim() + ",");
+                File.AppendAllText("data_patients_10000.csv", firstNames[ran.Next(lastNames.Count)].Trim() + ",");
+                File.AppendAllText("data_patients_10000.csv", ran.Next(2) + ",");
+                File.AppendAllText("data_patients_10000.csv", RandomDOB(ran).ToString("yyyy/MM/dd") + ",");
+                var address = addresses[ran.Next(addresses.Count)];
+                File.AppendAllText("data_patients_10000.csv", address.Item1.Trim() + ",");
+                File.AppendAllText("data_patients_10000.csv", address.Item2.Trim() + ",");
+                File.AppendAllText("data_patients_10000.csv", address.Item3.Trim() + ",");
+                File.AppendAllText("data_patients_10000.csv", address.Item4.Trim() + ",");
+                File.AppendAllText("data_patients_10000.csv", address.Item5.Trim() + "\n");
+                if (i % 100 == 0)
                 {
-                    writer.Write("P" + (i + 1).ToString().PadLeft(7, '0') + ",");
-                    writer.Write(lastNames[ran.Next(lastNames.Count)].Trim() + ",");
-                    writer.Write(firstNames[ran.Next(lastNames.Count)].Trim() + ",");
-                    writer.Write(ran.Next(2) + ",");
-                    writer.Write(RandomDOB(ran).ToString("yyyy/MM/dd") + ",");
-                    var address = addresses[ran.Next(addresses.Count)];
-                    writer.Write(address.Item1.Trim() + ",");
-                    writer.Write(address.Item2.Trim() + ",");
-                    writer.Write(address.Item3.Trim() + ",");
-                    writer.Write(address.Item4.Trim() + ",");
-                    writer.Write(address.Item5.Trim());
-                    writer.WriteLine();
+                    Console.WriteLine("Generated : " + i + "/10,000 patients");
                 }
             }
 
-            File.Copy(@"data_patients_10000.csv", @"data_patients_100000.csv", true);
-            using (var file = new FileStream(@"data_patients_100000.csv", FileMode.Append))
-            using (var writer = new StreamWriter(file))
+            File.WriteAllText(@"data_patients_100000.csv", "MRN, LastName,FirstName,Gender,DOB,AddressStreet1,AddressStreet2,AddressCity,AddressState,AddressZIPCode\n");
+            for (int i = 0; i < 100000; i++)
             {
-                for (int i = 10000; i < 100000; i++)
+                File.AppendAllText("data_patients_100000.csv", "P" + (i + 1).ToString().PadLeft(7, '0') + ",");
+                File.AppendAllText("data_patients_100000.csv", lastNames[ran.Next(lastNames.Count)].Trim() + ",");
+                File.AppendAllText("data_patients_100000.csv", firstNames[ran.Next(lastNames.Count)].Trim() + ",");
+                File.AppendAllText("data_patients_100000.csv", ran.Next(2) + ",");
+                File.AppendAllText("data_patients_100000.csv", RandomDOB(ran).ToString("yyyy/MM/dd") + ",");
+                var address = addresses[ran.Next(addresses.Count)];
+                File.AppendAllText("data_patients_100000.csv", address.Item1.Trim() + ",");
+                File.AppendAllText("data_patients_100000.csv", address.Item2.Trim() + ",");
+                File.AppendAllText("data_patients_100000.csv", address.Item3.Trim() + ",");
+                File.AppendAllText("data_patients_100000.csv", address.Item4.Trim() + ",");
+                File.AppendAllText("data_patients_100000.csv", address.Item5.Trim());
+                if (i % 100 == 0)
                 {
-                    writer.Write("P" + (i + 1).ToString().PadLeft(7, '0') + ",");
-                    writer.Write(lastNames[ran.Next(lastNames.Count)].Trim() + ",");
-                    writer.Write(firstNames[ran.Next(lastNames.Count)].Trim() + ",");
-                    writer.Write(ran.Next(2) + ",");
-                    writer.Write(RandomDOB(ran).ToString("yyyy/MM/dd") + ",");
-                    var address = addresses[ran.Next(addresses.Count)];
-                    writer.Write(address.Item1.Trim() + ",");
-                    writer.Write(address.Item2.Trim() + ",");
-                    writer.Write(address.Item3.Trim() + ",");
-                    writer.Write(address.Item4.Trim() + ",");
-                    writer.Write(address.Item5.Trim());
-                    writer.WriteLine();
+                    Console.WriteLine("Generated : " + i + "/100,000 patients");
                 }
             }
+            timer.Stop();
+            Console.WriteLine("Generated 111,000 patients in " + timer.Elapsed);
+            Console.ReadLine();
         }
 
         public static DateTime RandomDOB(Random randomTest)
