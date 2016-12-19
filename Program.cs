@@ -4,7 +4,8 @@ using System.Linq;
 using System.IO;
 using Clearwave.IO;
 using System.Diagnostics;
-
+using RandomPatientGenerator.Model;
+ 
 namespace RandomPatientGenerator
 {
     public class Program
@@ -27,6 +28,8 @@ namespace RandomPatientGenerator
                     }
                 }
             }
+
+            execUsingPatientRoster(lastNames, firstNames, addresses);
 
             var timer = new Stopwatch();
             timer.Start();
@@ -91,9 +94,17 @@ namespace RandomPatientGenerator
                     Console.WriteLine("Generated : " + i + "/100,000 patients");
                 }
             }
+
             timer.Stop();
             Console.WriteLine("Generated 111,000 patients in " + timer.Elapsed);
             Console.ReadLine();
+        }
+
+        public static void execUsingPatientRoster(List<string> lastNames, List<string> firstNames, List<Tuple<string, string, string, string, string>> addresses)
+        {
+            PatientRoster roster = new PatientRoster(1000);
+            roster.initData(lastNames, firstNames, addresses);
+            roster.exportToCSV("data_patients_revised.csv");
         }
 
         public static DateTime RandomDOB(Random randomTest)

@@ -46,6 +46,8 @@
     <Compile Include="IO\CSVReader.cs" />
     <Compile Include="IO\IDelimitedReader.cs" />
     <Compile Include="IO\IDelimitedRow.cs" />
+    <Compile Include="Model\Patient.cs" />
+    <Compile Include="PatientRoster.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

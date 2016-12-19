@@ -1,0 +1,68 @@
+Clearwave exercise #1
+
+Observation: output of data_patients*.csv doesn't have line ending characters
+
+What can be improved to make the application run at a more reasonable speed?
+(*) initialization region where lastNames & firstNames are converted to Lists, possibly Hashtable more efficient given use case (psedo random indexed access)
+(*) create a PatientList class with exportAsCSV() method where complete flush contents to file operation is performed
+	-->HashSet<Patient> or List<Patient>
+	-->
+	enum Gender
+    {
+        Male = 0,
+        Female = 1
+    };
+
+	class Patient {
+		string MRN {get; set;}
+		public string FirstName {get; set;}
+		public string LastName {get; set;}
+		Gender PatientGender {get; set;}
+		DateTime DOB {get; set;}
+		Address CurrentAddress {get; set;}
+	}
+
+	class Address {
+		string AddressStreet1 {get; set;}
+		string AddressStreet2 {get; set;}
+		string City {get; set;}
+		string State {get; set;}
+		string PostalCode {get; set;}
+	}
+
+	public class PatentRoster
+	{
+		HashSet<Patient> roster = new HashSet<Patient>();
+
+		public void AdmitPatient(Patient newPatient)
+		{
+			//preliminary processing if required
+			roster.Add(newPatient);
+		}
+
+		public void ReleasePatient(Patient toRelease)
+		{
+			//preliminary processing if required
+			roster.Remove(toRelease);
+		}
+
+		void exportRostertoCSV(String outputFileName)
+		{
+			File.WriteAllText(outputFileName, "MRN, LastName,FirstName,Gender,DOB,AddressStreet1,AddressStreet2,AddressCity,AddressState,AddressZIPCode\n");
+			File.WriteAllLines(outputFileName, roster.ToList().ForEach(p => p.outputRecord()));
+			
+
+		}
+	}
+
+now, we construct/instantiate new Patient()'s; and subsequently add new patient object to roster
+
+How could the code be made more legible?
+(*) by employing classes/objects where applicable e.g. an Address object in place of Tuple<string, string, string, string, string>
+(*) proper use of variables and/or const e.g. data_patients_*.csv written out several times in code block responsible for writing file contents
+
+What other improvements could be made to the application now to make changes and expansions to the application easier down the road?
+(*) in an effort to support multiple input data formats, we could refactor input processing code to an abstract class, and have all supporting formats subclass from the parent
+(*) the same pattern can be utlized for export formats
+(*) data validation is key to a well-functioning system
+(*) UNIT TESTING !!!!
